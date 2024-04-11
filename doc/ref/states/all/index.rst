@@ -64,6 +64,24 @@ state modules
     network
     nftables
     ntp
+    nxos
+    nxos_upgrade
+    openstack_config
+    openvswitch_bridge
+    openvswitch_db
+    openvswitch_port
+    opsgenie
+    pagerduty
+    pagerduty_escalation_policy
+    pagerduty_schedule
+    pagerduty_service
+    pagerduty_user
+    panos
+    pbm
+    pcs
+    pdbedit
+    pecl
+    pem
     pip_state
     pkg
     pkgbuild
