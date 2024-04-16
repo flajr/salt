@@ -121,7 +121,7 @@ def test_managed():
             assert ret["result"] is False
             assert (
                 ret["comment"]
-                == "Certificates CN does not match (skip with pillar='{skip_conditions: True}')\n"
+                == "Existing cert info:\n- Subject: CN=www.example.com,O=Frank4DD,ST=Tokyo,C=JP\n- Not valid after: 2017-08-21 05:26:54\nNew cert info:\n+ Subject: CN=*.duckduckgo.com,O=Duck Duck Go\\, Inc.,L=Paoli,ST=Pennsylvania,C=US\n+ Not valid after: 2024-11-05 23:59:59\nCertificates CN does not match (skip with pillar='{skip_conditions: True}')\n"
             )
             assert ret["changes"] == {}
 

@@ -266,6 +266,7 @@ def managed(
         ret["comment"] = f"Unable to determine existing file: {exc}"
         return ret
 
+    # Determine what info should be added to comment
     if existing_cert_info == "" and new_cert_info == "":
         log.debug(
             "pem: No certificate information was found - state is running as normal file.managed state"
@@ -276,6 +277,10 @@ def managed(
             and new_cert.not_valid_after == existing_cert.not_valid_after
         ):
             ret["comment"] = f"Certificates are the same:\n{existing_cert_info}\n"
+        else:
+            ret["comment"] = (
+                f"Existing cert info:\n{existing_cert_info}\nNew cert info:\n{new_cert_info}\n"
+            )
     elif existing_cert_info == "" and new_cert_info != "":
         ret["comment"] = f"New cert info:\n{new_cert_info}\n"
     else:
