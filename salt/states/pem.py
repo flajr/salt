@@ -204,14 +204,15 @@ def managed(
 
     # If no contents specified, get content from salt
     if source_content is None:
-        try:
-            source_content = __salt__["cp.get_file_str"](
-                path=source,
-                saltenv=saltenv,
-            )
-        except Exception as exc:  # pylint: disable=broad-except
+        if source is None:
+            return _error(ret, "No content and no source specified")
+        source_content = __salt__["cp.get_file_str"](
+            path=source,
+            saltenv=saltenv,
+        )
+        if not source_content:
             ret["result"] = False
-            ret["comment"] = f"Unable to get file str: {exc}"
+            ret["comment"] = f"Unable to get source file str: {source}"
             return ret
 
     # Apply template
@@ -233,9 +234,6 @@ def managed(
             else:
                 ret["comment"] = "Error while applying template on source_content"
             return ret
-
-    if source_content is None:
-        return _error(ret, "source_content is empty")
 
     try:
         new_cert = x509.load_pem_x509_certificate(source_content.encode())

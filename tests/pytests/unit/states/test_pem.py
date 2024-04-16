@@ -125,6 +125,48 @@ def test_managed():
             )
             assert ret["changes"] == {}
 
+    # Mock cp.get_file_str to return False
+    with patch.dict(
+        pem.__salt__,
+        {"cp.get_file_str": MagicMock(return_value=False)},
+    ):
+
+        # Unable to get source file
+        with patch("salt.utils.files.fopen", MagicMock()):
+            ret = pem.managed(
+                name=name, source=source, user=user, group=group, mode=mode
+            )
+            assert ret["result"] is False
+            assert ret["comment"] == "Unable to get source file str: salt://example.crt"
+
+        # No content and no source specified
+        with patch("salt.utils.files.fopen", MagicMock()):
+            ret = pem.managed(name=name, source=None, user=user, group=group, mode=mode)
+            assert ret["result"] is False
+            assert ret["comment"] == "No content and no source specified"
+
+    # Test BAD input data, state should continue as file.managed backend
+    # So no comments, changes and result is True, are expected
+    # Even missing destination file is ok, if this is first time running state
+    with patch.dict(
+        pem.__salt__,
+        {"cp.get_file_str": MagicMock()},
+    ):
+        with patch(
+            "cryptography.x509.load_pem_x509_certificate",
+            MagicMock(side_effect=ValueError()),
+        ):
+            with patch.dict(pem.__opts__, {"test": True}), patch(
+                "salt.utils.files.fopen",
+                mock_open(read_data=FileNotFoundError()),
+            ):
+                ret = pem.managed(
+                    name=name, source=source, user=user, group=group, mode=mode
+                )
+                assert ret["comment"] == ""
+                assert ret["changes"] == {}
+                assert ret["result"] is True
+
 
 def test_managed_with_templating_and_cp_get_file_str():
     """
